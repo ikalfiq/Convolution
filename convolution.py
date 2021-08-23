@@ -60,8 +60,8 @@ def calculate(img_roi, kernel):
 def output_image(default_image, region_averages, width, height):
     # Reorganize the list such that you end up with a 718x958 image
     region_averages = np.array([region_averages]).reshape(height, width)
-    cv2.imwrite("Convoluted.jpg", region_averages)
-    convoluted_pic = cv2.imread("Convoluted.jpg")
+    cv2.imwrite("convoluted.jpg", region_averages)
+    convoluted_pic = cv2.imread("convoluted.jpg")
     cv2.imshow("Convoluted", convoluted_pic)
     cv2.imshow("Default", default_image)
     #cv2.imshow("Convoluted", region_averages)
@@ -72,13 +72,13 @@ if __name__ == "__main__":
 
     # OpenCV open image, duplicate so that we don't mess up the original image
     input_img = cv2.imread("test.jpg")
-    duplicate_input = img.copy()
+    duplicate_input = input_img.copy()
 
     height, width = 960, 720
     #height, width = 12, 12 
 
-    duplicate_input = cv2.resize(duplicate, (width, height))
-    duplicate_input = cv2.cvtColor(duplicate, cv2.COLOR_BGR2GRAY)
+    duplicate_input = cv2.resize(duplicate_input, (width, height))
+    duplicate_input = cv2.cvtColor(duplicate_input, cv2.COLOR_BGR2GRAY)
 
     extract_roi(duplicate_input, width, height)
 
