@@ -5,77 +5,69 @@ import numpy as np
 #cv2.resizeWindow("Output", (720,960))
 
 # Work with region of interest (roi) for greater efficiency
-def extract_roi(img, width, height):
-    # Define the kernel and image region of interest
+def extract_roi(input_image, width, height):
     kernel = np.array(
             [[1, 2, 1],
             [2, 4, 2],
             [1, 2, 1]]
             )/16
 
+    # these are variables to keep track of kernel positions and store pixel values before and after calculations
     row, column = 0, 0
-    img_roi = []
+    input_roi = []
     region_averages = []
 
-    kernel_threshold, kernel_size = kernel.shape[0] - 1, kernel.shape[0]
+    # output image will be smaller after convolution, so we need to set and account for the correct limits 
+    # note that width and height should be smaller to account for array starting from index 0
+    kernel_size = kernel.shape[0]
+    convolution_widthLimit, convolution_heightLimit = width-3, height-3 
+    output_width, output_height = width-2, height-2
 
     while (True):
-        # Get the region of interest
-        if (row+kernel_threshold <= height - 1 and column+kernel_threshold <=  width-1):
+        # extract region of interest
+        if (row <= convolution_heightLimit and column <= convolution_widthLimit):
             for size in range(kernel_size):
-                img_roi.append(img[row+size][column:column+kernel_size])
+                input_roi.append(input_image[row + size][column:column + kernel_size])
 
-            # Track the row and column for convenience
-            #print("Row:", row)
-            #print("Column:", column)
             column += 1
-            region_averages.append(calculate(img_roi, kernel))
-            # Reinitialize the roi list to minimize the number of members 
-            img_roi = []
-            #break # This is to stop at the first iteration
+
+            input_roi, kernel = np.array([input_roi]).ravel(), kernel.ravel()
+            # matrix multiplication is the fastest way to get convolution sum
+            pixel_average = int(input_roi.dot(kernel.T)/ kernel.size)
+            region_averages.append(pixel_average)
+
+            # reinitialize the roi list to minimize the number of members 
+            input_roi = []
             
-        # Column overflow
-        elif (column+kernel_threshold > width-1):
+        # column overflow, move to next row
+        elif (column > convolution_widthLimit):
             column = 0
             row += 1
 
-        # Reach end of image
-        elif (row+kernel_threshold > height - 1):
+        # end of image reached
+        elif (row > convolution_heightLimit):
             break
 
-    # print(len(averages)) # Number of members correspond to number of pixels for convoled image
+    # display input and output images
+    output_image(input_image, region_averages, output_width, output_height)
 
-    # Proceed to display the output image
-    output_image(img, region_averages, width-kernel_threshold, height-kernel_threshold)
-
-def calculate(img_roi, kernel):
-    img_roi, kernel = np.array(img_roi).ravel(), kernel.ravel()
-    #print(img_roi, kernel)
-
-    # Matrix multiplication is the fastest way to get convolution sum
-    average_value = int(img_roi.dot(kernel.T)/ kernel.size)
-    #print(average_value)
-    return average_value
-
-def output_image(default_image, region_averages, width, height):
-    # Reorganize the list such that you end up with a 718x958 image
-    region_averages = np.array([region_averages]).reshape(height, width)
-    cv2.imwrite("convoluted.jpg", region_averages)
-    convoluted_pic = cv2.imread("convoluted.jpg")
-    cv2.imshow("Convoluted", convoluted_pic)
-    cv2.imshow("Default", default_image)
-    #cv2.imshow("Convoluted", region_averages)
+def output_image(input_image, region_averages, width, height):
+    # reshape to get the correct dimensions 
+    output_image = np.array([region_averages]).reshape(height, width)
+    cv2.imwrite("convoluted.jpg", output_image)
+    output_image = cv2.imread("convoluted.jpg")
+    cv2.imshow("Convoluted", output_image)
+    cv2.imshow("Default", input_image)
     print("Done")
     cv2.waitKey(0)
 
 if __name__ == "__main__":
 
     # OpenCV open image, duplicate so that we don't mess up the original image
-    input_img = cv2.imread("test.jpg")
-    duplicate_input = input_img.copy()
+    original_input = cv2.imread("test.jpg")
+    duplicate_input = original_input.copy()
 
     height, width = 960, 720
-    #height, width = 12, 12 
 
     duplicate_input = cv2.resize(duplicate_input, (width, height))
     duplicate_input = cv2.cvtColor(duplicate_input, cv2.COLOR_BGR2GRAY)
