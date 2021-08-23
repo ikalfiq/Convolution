@@ -5,7 +5,7 @@ import numpy as np
 #cv2.resizeWindow("Output", (720,960))
 
 # Work with region of interest (roi) for greater efficiency
-def extract_roi(input_image, width, height):
+def extract_roi(original_image, input_image, width, height):
     kernel = np.array(
             [[1, 2, 1],
             [2, 4, 2],
@@ -49,15 +49,16 @@ def extract_roi(input_image, width, height):
             break
 
     # display input and output images
-    output_image(input_image, region_averages, output_width, output_height)
+    output_image(original_image, input_image, region_averages, output_width, output_height)
 
-def output_image(input_image, region_averages, width, height):
+def output_image(original_image, input_image, region_averages, width, height):
     # reshape to get the correct dimensions 
     output_image = np.array([region_averages]).reshape(height, width)
     cv2.imwrite("convoluted.jpg", output_image)
     output_image = cv2.imread("convoluted.jpg")
     cv2.imshow("Convoluted", output_image)
-    cv2.imshow("Default", input_image)
+    cv2.imshow("Original", original_image)
+    cv2.imshow("Gray", input_image)
     print("Done")
     cv2.waitKey(0)
 
@@ -70,9 +71,7 @@ if __name__ == "__main__":
     height, width = 960, 720
 
     duplicate_input = cv2.resize(duplicate_input, (width, height))
+    original_input = cv2.resize(original_input, (width, height))
     duplicate_input = cv2.cvtColor(duplicate_input, cv2.COLOR_BGR2GRAY)
 
-    extract_roi(duplicate_input, width, height)
-
-    cv2.waitKey(0)
-    
+    extract_roi(original_input, duplicate_input, width, height)
