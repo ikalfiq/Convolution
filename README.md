@@ -16,3 +16,5 @@ Points of improvement:
 
 2) Include popular filters as presets (like Gaussian filter)
 
+Disclaimer: May or may not continue working on this repository. Depends on how practical it is...
+
