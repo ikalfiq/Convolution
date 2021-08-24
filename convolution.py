@@ -24,13 +24,17 @@ def extract_roi(original_image, input_image, width, height):
     convolution_widthLimit, convolution_heightLimit = width-3, height-3 
     output_width, output_height = width-2, height-2
 
-    start = time.time()
+    #start = time.time()
 
     while (True):
         # extract region of interest
         if (row <= convolution_heightLimit and column <= convolution_widthLimit):
             row_segment = input_image[row:row + kernel_size, column:column + kernel_size]
             input_roi.append(row_segment)
+
+            # for loop method increases the time complexity
+            #for size in range(kernel_size):
+            #    input_roi.append(input_image[row+size][column:column+kernel_size])
 
             column += 1
 
@@ -51,7 +55,7 @@ def extract_roi(original_image, input_image, width, height):
         elif (row > convolution_heightLimit):
             break
 
-    end = time.time()
+    #end = time.time()
     print("Duration to run while loop:", end-start)
     # display input and output images
     output_image(original_image, input_image, region_averages, output_width, output_height)
