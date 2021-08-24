@@ -5,6 +5,9 @@ Convolution filters are used to compress images while still preserving reasonabl
 
 ![alt text](https://github.com/kalfiq/Convolution/blob/main/comparison.JPG)
 
+Usage guide:
+	Presently, utility of this program is very basic and limited so the user just has to run the program.
+
 Points of improvement:
 1) Allow users to customize to their specific needs 
 	- User's choice of image 
