@@ -56,7 +56,7 @@ def extract_roi(original_image, input_image, width, height):
             break
 
     #end = time.time()
-    print("Duration to run while loop:", end-start)
+    #print("Duration to run while loop:", end-start)
     # display input and output images
     output_image(original_image, input_image, region_averages, output_width, output_height)
 
